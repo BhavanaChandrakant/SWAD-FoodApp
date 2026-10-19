@@ -8,7 +8,11 @@ import com.mysql.jdbc.Driver;
 
 public class DBConnection {
 	
-	private static final String URL = "jdbc:mysql://localhost:3306/foodapp";
+	private static final String URL =
+	        System.getenv("FOODAPP_DB_URL") != null
+	        && !System.getenv("FOODAPP_DB_URL").trim().isEmpty()
+	        ? System.getenv("FOODAPP_DB_URL")
+	        : "jdbc:mysql://localhost:3306/foodapp";
 	private static final String USERNAME =
 	        System.getenv("FOODAPP_DB_USERNAME");
 
