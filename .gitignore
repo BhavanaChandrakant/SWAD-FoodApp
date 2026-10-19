@@ -1,0 +1,16 @@
+# Build output
+/bin/
+/build/
+/target/
+
+# Logs
+*.log
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# Local IDE and server metadata
+.metadata/
+Servers/

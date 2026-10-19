@@ -1,0 +1,586 @@
+/* ==========================================================
+   SWAD HERO - SOFT, LOOPING FOOD VIDEO BACKGROUND
+   Loaded after common.css and home.css.
+   No floating food cutouts; the headline stays centered.
+   ========================================================== */
+
+.food-hero {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    min-height: 640px;
+    overflow: hidden;
+    background: #fff7f0;
+    color: #252222;
+}
+
+/* A normal MP4 is not an alpha-channel transparent video. The video sits
+   above the section background and below a light overlay and headline. */
+.food-hero .hero-background-video {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    opacity: 0.94;
+    filter: saturate(1.00) contrast(1.02);
+    pointer-events: none;
+}
+
+.food-hero .hero-video-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+        radial-gradient(
+            circle at 9% 12%,
+            rgba(255, 226, 207, 0.20),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 92% 81%,
+            rgba(255, 221, 202, 0.20),
+            transparent 30%
+        ),
+        linear-gradient(
+            105deg,
+            rgba(255, 250, 245, 0.40) 0%,
+            rgba(255, 246, 239, 0.27) 50%,
+            rgba(255, 250, 245, 0.40) 100%
+        );
+}
+
+.food-hero .food-hero-shell {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 1380px;
+    min-height: 640px;
+    margin: 0 auto;
+    padding: 82px 6% 78px;
+}
+
+.food-hero .food-hero-copy {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 850px);
+    max-width: 850px;
+    margin: 0 auto;
+    text-align: center;
+    animation: swadHeroAppear 0.8s ease both;
+}
+
+.food-hero .hero-kicker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 0 26px;
+    color: #e23744;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+}
+
+.food-hero .kicker-dot {
+    display: inline-block;
+    flex: 0 0 auto;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #e23744;
+    box-shadow: 0 0 0 5px rgba(226, 55, 68, 0.12);
+}
+
+.food-hero .hero-copy h1 {
+    max-width: 900px;
+    margin: 0 auto;
+    color: #242222;
+    font-size: clamp(43px, 5.4vw, 72px);
+    font-weight: 850;
+    letter-spacing: -2.7px;
+    line-height: 1.08;
+    text-wrap: balance;
+    text-shadow: 0 1px 14px rgba(255, 250, 245, 0.22);
+}
+
+.food-hero .hero-copy h1 span {
+    display: block;
+    margin-top: 6px;
+    color: #e23744;
+}
+
+.food-hero .hero-description {
+    max-width: 630px;
+    margin: 23px auto 0;
+    color: #6f6865;
+    font-size: 16px;
+    line-height: 1.85;
+    text-shadow: 0 1px 10px rgba(255, 250, 245, 0.45);
+}
+
+.food-hero .hero-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-top: 31px;
+}
+
+.food-hero .home-btn-primary {
+    color: #ffffff;
+    background: #e23744;
+    box-shadow: 0 9px 22px rgba(226, 55, 68, 0.19);
+}
+
+.food-hero .home-btn-primary:hover {
+    color: #ffffff;
+    background: #c92d39;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(226, 55, 68, 0.25);
+}
+
+.food-hero .hero-secondary-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: #504946;
+    font-size: 14px;
+    font-weight: 750;
+    text-decoration: none;
+    transition: color 0.25s ease;
+}
+
+.food-hero .hero-secondary-link span {
+    color: #e23744;
+    font-size: 19px;
+    transition: transform 0.25s ease;
+}
+
+.food-hero .hero-secondary-link:hover {
+    color: #e23744;
+}
+
+.food-hero .hero-secondary-link:hover span {
+    transform: translateY(3px);
+}
+
+.food-hero .hero-caption {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 34px;
+}
+
+.food-hero .hero-caption p {
+    margin: 0;
+    color: #938078;
+    font-size: 12px;
+    font-weight: 650;
+    letter-spacing: 0.25px;
+}
+
+.food-hero .caption-line {
+    display: inline-block;
+    width: 28px;
+    height: 2px;
+    background: #f0a7a0;
+}
+
+.food-hero .hero-bottom-decoration {
+    position: absolute;
+    right: -110px;
+    bottom: -180px;
+    z-index: 0;
+    width: 340px;
+    height: 280px;
+    border: 35px solid rgba(226, 55, 68, 0.045);
+    border-radius: 50%;
+    transform: rotate(-25deg);
+    pointer-events: none;
+}
+
+@keyframes swadHeroAppear {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 900px) {
+    .food-hero,
+    .food-hero .food-hero-shell {
+        min-height: 600px;
+    }
+
+    .food-hero .food-hero-shell {
+        padding: 75px 6%;
+    }
+
+    .food-hero .hero-copy h1 {
+        font-size: clamp(42px, 7vw, 62px);
+        letter-spacing: -1.9px;
+    }
+
+    .food-hero .hero-description {
+        max-width: 590px;
+    }
+}
+
+@media (max-width: 600px) {
+    .food-hero,
+    .food-hero .food-hero-shell {
+        min-height: 590px;
+    }
+
+    .food-hero .food-hero-shell {
+        padding: 65px 6% 60px;
+    }
+
+    .food-hero .hero-kicker {
+        margin-bottom: 20px;
+        font-size: 9px;
+        letter-spacing: 1.7px;
+    }
+
+    .food-hero .hero-copy h1 {
+        font-size: clamp(36px, 9vw, 49px);
+        letter-spacing: -1.4px;
+        line-height: 1.12;
+    }
+
+    .food-hero .hero-description {
+        margin-top: 19px;
+        font-size: 14px;
+        line-height: 1.75;
+    }
+
+    .food-hero .hero-actions {
+        gap: 16px;
+        margin-top: 24px;
+    }
+
+    .food-hero .hero-caption {
+        margin-top: 25px;
+    }
+
+    .food-hero .hero-background-video {
+        object-position: center center;
+        opacity: 0.94;
+    }
+
+    .food-hero .hero-video-overlay {
+        background:
+            linear-gradient(
+                180deg,
+                rgba(255, 249, 244, 0.43) 0%,
+                rgba(255, 246, 239, 0.30) 50%,
+                rgba(255, 249, 244, 0.45) 100%
+            );
+    }
+}
+
+@media (max-width: 390px) {
+    .food-hero,
+    .food-hero .food-hero-shell {
+        min-height: 610px;
+    }
+
+    .food-hero .hero-copy h1 {
+        font-size: 35px;
+    }
+
+    .food-hero .hero-actions {
+        flex-direction: column;
+        gap: 17px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .food-hero .food-hero-copy {
+        animation: none;
+    }
+}
+
+
+/* ==========================================================
+   TYPED HEADLINE EFFECT
+   Keeps the existing centered headline and SWAD red accent.
+   ========================================================== */
+.food-hero .hero-copy h1 .typed-headline-line {
+    display: block;
+    min-height: 1.12em;
+    margin-top: 6px;
+    color: #e23744;
+    white-space: nowrap;
+    position: relative;
+    text-align: inherit;
+}
+
+.food-hero .hero-copy h1 #typed-phrase {
+    color: inherit;
+}
+
+.food-hero .typed-cursor {
+    display: inline-block;
+    margin-left: 3px;
+    color: #e23744;
+    font-weight: 500;
+    animation: swadCursorBlink 0.8s steps(2, start) infinite;
+}
+
+@keyframes swadCursorBlink {
+    to { visibility: hidden; }
+}
+
+@media (max-width: 600px) {
+    .food-hero .hero-copy h1 .typed-headline-line {
+        white-space: normal;
+        min-height: 1.12em;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .food-hero .typed-cursor {
+        animation: none;
+    }
+}
+
+
+/* =========================================
+   SWAD TEXT VISIBILITY FIX ONLY
+   Keep existing layout and video unchanged
+   ========================================= */
+
+/* Small hero label */
+.food-hero .hero-kicker {
+    color: #a91f30;
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.75);
+}
+
+/* Main headline */
+.food-hero .hero-copy h1 {
+    color: #211b19;
+    text-shadow: 0 1px 4px rgba(255, 250, 245, 0.75);
+}
+
+/* Animated phrase */
+.food-hero .typed-headline-line,
+.food-hero #typed-phrase,
+.food-hero .typed-cursor {
+    color: #c21f35;
+    text-shadow: 0 1px 4px rgba(255, 250, 245, 0.85);
+}
+
+/* Description below the heading */
+.food-hero .hero-description {
+    color: #302724;
+    text-shadow: 0 1px 3px rgba(255, 250, 245, 0.9);
+}
+
+/* Secondary Discover SWAD link */
+.food-hero .hero-secondary-link {
+    color: #29211e;
+    text-shadow: 0 1px 3px rgba(255, 250, 245, 0.8);
+}
+
+/* Arrow beside the secondary link */
+.food-hero .hero-secondary-link span {
+    color: #b91f32;
+}
+
+/* Caption at the bottom of the hero */
+.food-hero .hero-caption p {
+    color: #30231e;
+    text-shadow: 0 1px 3px rgba(255, 250, 245, 0.9);
+}
+
+/* Improve contrast in sections below the video */
+.benefit-item strong,
+.food-card-content h3,
+.step-content h3 {
+    color: #292321;
+}
+
+.benefit-item p,
+.section-description,
+.food-card-content p,
+.food-section-note,
+.how-intro > p:not(.section-eyebrow),
+.step-content p {
+    color: #51443e;
+}
+
+.section-heading h2,
+.how-intro h2 {
+    color: #25201e;
+}
+
+.section-heading h2 span,
+.how-intro h2 span,
+.section-eyebrow {
+    color: #b92334;
+}
+
+/* =========================================
+   FLASHY SWAD HERO TAGLINE
+   ========================================= */
+
+.food-hero .hero-tagline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.food-hero .hero-tagline-text {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    margin: 0;
+
+    font-size: 15px;
+    font-weight: 850;
+    letter-spacing: 0.3px;
+}
+
+/* Individual words */
+.food-hero .tagline-word {
+    position: relative;
+    display: inline-block;
+
+    padding: 3px 1px 6px;
+
+    color: #c92336;
+    text-shadow: 0 1px 5px rgba(255, 255, 255, 0.85);
+
+    animation: taglineReveal 0.65s ease both;
+}
+
+.food-hero .tagline-word:nth-child(2) {
+    animation-delay: 0.18s;
+}
+
+.food-hero .tagline-word:nth-child(3) {
+    animation-delay: 0.36s;
+}
+
+/* Animated underline */
+.food-hero .tagline-word::after {
+    content: "";
+
+    position: absolute;
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+    height: 2px;
+
+    border-radius: 3px;
+
+    background: linear-gradient(
+        90deg,
+        #e23744,
+        #ff9c70
+    );
+
+    transform: scaleX(0);
+    transform-origin: left;
+
+    animation: taglineUnderline 0.55s ease forwards;
+}
+
+.food-hero .tagline-word:nth-child(1)::after {
+    animation-delay: 0.35s;
+}
+
+.food-hero .tagline-word:nth-child(2)::after {
+    animation-delay: 0.53s;
+}
+
+.food-hero .tagline-word:nth-child(3)::after {
+    animation-delay: 0.71s;
+}
+
+/* Highlight the description */
+.food-hero .description-highlight {
+    display: inline;
+    padding: 1px 4px;
+
+    color: #b51f32;
+    font-weight: 800;
+
+    background: linear-gradient(
+        180deg,
+        transparent 58%,
+        rgba(255, 157, 135, 0.35) 58%
+    );
+
+    border-radius: 3px;
+}
+
+/* Animations */
+@keyframes taglineReveal {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes taglineUnderline {
+    to {
+        transform: scaleX(1);
+    }
+}
+
+/* Mobile styling */
+@media (max-width: 600px) {
+    .food-hero .hero-tagline {
+        gap: 8px;
+    }
+
+    .food-hero .hero-tagline-text {
+        gap: 7px;
+        font-size: 12px;
+    }
+
+    .food-hero .tagline-word {
+        padding-bottom: 5px;
+    }
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .food-hero .tagline-word,
+    .food-hero .tagline-word::after {
+        animation: none;
+    }
+
+    .food-hero .tagline-word::after {
+        transform: scaleX(1);
+    }
+}

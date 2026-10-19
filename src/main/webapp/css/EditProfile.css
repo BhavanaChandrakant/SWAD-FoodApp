@@ -1,0 +1,496 @@
+* {
+    box-sizing: border-box;
+}
+
+
+/* ================= BODY ================= */
+
+body {
+    margin: 0;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    background: #f7f7f7;
+
+    color: #222;
+}
+
+
+/* ================= NAVBAR ================= */
+
+.navbar {
+    height: 70px;
+
+    background: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 45px;
+
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+
+/* SWAD LOGO */
+
+.navbar-brand a {
+    text-decoration: none;
+
+    font-size: 28px;
+
+    font-weight: 800;
+
+    color: #e23744;
+}
+
+
+/* NAVBAR LINKS */
+
+.navbar-links {
+    display: flex;
+
+    align-items: center;
+
+    gap: 28px;
+}
+
+.navbar-links > a {
+    text-decoration: none;
+
+    color: #333;
+
+    font-weight: 600;
+}
+
+.navbar-links > a:hover {
+    color: #e23744;
+}
+
+
+/* ================= PROFILE DROPDOWN ================= */
+
+.profile-wrapper {
+    position: relative;
+}
+
+
+/* PROFILE CIRCLE */
+
+.profile-icon {
+    width: 42px;
+    height: 42px;
+
+    border-radius: 50%;
+
+    background: #e23744;
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+
+/* DROPDOWN */
+
+.profile-dropdown {
+    display: none;
+
+    position: absolute;
+
+    right: 0;
+
+    top: 50px;
+
+    width: 190px;
+
+    background: white;
+
+    border-radius: 10px;
+
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+
+    padding: 12px;
+
+    z-index: 100;
+}
+
+
+/* SHOW DROPDOWN */
+
+.profile-wrapper:hover .profile-dropdown {
+    display: block;
+}
+
+
+/* DROPDOWN LINKS */
+
+.profile-dropdown a {
+    display: block;
+
+    padding: 10px;
+
+    text-decoration: none;
+
+    color: #333;
+}
+
+.profile-dropdown a:hover {
+    background: #f5f5f5;
+}
+
+
+/* USER NAME */
+
+.profile-name {
+    font-weight: bold;
+
+    padding: 10px;
+}
+
+
+/* DIVIDER */
+
+.dropdown-divider {
+    height: 1px;
+
+    background: #eee;
+
+    margin: 5px 0;
+}
+
+
+/* LOGOUT */
+
+.logout-link {
+    color: #e23744 !important;
+}
+
+
+/* ================= EDIT CONTAINER ================= */
+
+.edit-container {
+    width: 90%;
+
+    max-width: 700px;
+
+    margin: 45px auto;
+}
+
+
+/* ================= EDIT CARD ================= */
+
+.edit-card {
+    background: white;
+
+    border-radius: 16px;
+
+    padding: 35px;
+
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+}
+
+
+/* ================= HEADER ================= */
+
+.edit-header {
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+    padding-bottom: 25px;
+
+    margin-bottom: 25px;
+
+    border-bottom: 1px solid #eee;
+}
+
+
+/* LARGE PROFILE ICON */
+
+.large-profile-icon {
+    width: 75px;
+
+    height: 75px;
+
+    border-radius: 50%;
+
+    background: #e23744;
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 30px;
+
+    font-weight: bold;
+
+    flex-shrink: 0;
+}
+
+
+/* HEADER TITLE */
+
+.edit-header h1 {
+    margin: 0;
+
+    font-size: 28px;
+}
+
+
+/* HEADER DESCRIPTION */
+
+.edit-header p {
+    margin: 7px 0 0;
+
+    color: #777;
+
+    font-size: 15px;
+}
+
+
+/* ================= ERROR MESSAGE ================= */
+
+.error-message {
+    background: #fff0f0;
+
+    color: #d62828;
+
+    border: 1px solid #f0b5b5;
+
+    border-radius: 8px;
+
+    padding: 12px 15px;
+
+    margin-bottom: 20px;
+
+    font-size: 14px;
+}
+
+
+/* ================= FORM ================= */
+
+.form-group {
+    margin-bottom: 22px;
+}
+
+
+/* LABEL */
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: #444;
+}
+
+
+/* INPUT AND TEXTAREA */
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+
+    padding: 13px 14px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    outline: none;
+
+    background: white;
+
+    color: #222;
+}
+
+
+/* INPUT FOCUS */
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #e23744;
+
+    box-shadow: 0 0 0 2px rgba(226, 55, 68, 0.1);
+}
+
+
+/* TEXTAREA */
+
+.form-group textarea {
+    resize: vertical;
+
+    min-height: 100px;
+}
+
+
+/* ================= FORM BUTTONS ================= */
+
+.form-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 12px;
+
+    margin-top: 30px;
+}
+
+
+/* COMMON BUTTON STYLE */
+
+.cancel-button,
+.save-button {
+    padding: 13px 24px;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    text-decoration: none;
+}
+
+
+/* CANCEL BUTTON */
+
+.cancel-button {
+    background: white;
+
+    color: #555;
+
+    border: 1px solid #ccc;
+}
+
+.cancel-button:hover {
+    background: #f5f5f5;
+}
+
+
+/* SAVE BUTTON */
+
+.save-button {
+    background: #e23744;
+
+    color: white;
+
+    border: none;
+}
+
+.save-button:hover {
+    background: #c92f3b;
+}
+
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 700px) {
+
+    /* NAVBAR */
+
+    .navbar {
+        padding: 0 18px;
+    }
+
+    .navbar-links {
+        gap: 12px;
+    }
+
+    .navbar-links > a {
+        display: none;
+    }
+
+
+    /* CONTAINER */
+
+    .edit-container {
+        width: 94%;
+
+        margin: 25px auto;
+    }
+
+
+    /* CARD */
+
+    .edit-card {
+        padding: 22px;
+    }
+
+
+    /* HEADER */
+
+    .edit-header {
+        align-items: flex-start;
+
+        gap: 15px;
+    }
+
+
+    /* PROFILE ICON */
+
+    .large-profile-icon {
+        width: 60px;
+
+        height: 60px;
+
+        font-size: 25px;
+    }
+
+
+    /* TITLE */
+
+    .edit-header h1 {
+        font-size: 23px;
+    }
+
+
+    /* DESCRIPTION */
+
+    .edit-header p {
+        font-size: 13px;
+    }
+
+
+    /* BUTTONS */
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+
+    .cancel-button,
+    .save-button {
+        width: 100%;
+
+        text-align: center;
+    }
+}

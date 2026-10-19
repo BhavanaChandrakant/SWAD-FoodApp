@@ -1,0 +1,38 @@
+.success-message {
+    margin: 16px 0;
+    padding: 12px 14px;
+    color: #246b3b;
+    background: #ecf8ef;
+    border: 1px solid #cbe9d2;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.resend-form {
+    margin-top: 12px;
+}
+
+.resend-button {
+    width: 100%;
+    padding: 12px 16px;
+    color: #e23744;
+    background: #ffffff;
+    border: 1px solid #e23744;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.resend-button:hover {
+    color: #ffffff;
+    background: #e23744;
+}
+
+.resend-button:focus-visible {
+    outline: 3px solid rgba(226, 55, 68, 0.2);
+    outline-offset: 2px;
+}

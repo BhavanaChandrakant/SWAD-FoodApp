@@ -1,0 +1,161 @@
+.confirmation-page {
+    min-height: 70vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px;
+    background: #f8f8f8;
+}
+
+.confirmation-card {
+    width: 520px;
+    max-width: 100%;
+    background: #ffffff;
+    padding: 45px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+}
+
+.success-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #28a745;
+    color: white;
+
+    font-size: 42px;
+    font-weight: bold;
+}
+
+.confirmation-card h1 {
+    margin: 0 0 10px;
+
+    font-size: 30px;
+    color: #222;
+}
+
+.success-message {
+    margin-bottom: 30px;
+
+    color: #666;
+    font-size: 16px;
+}
+
+.order-details {
+    padding: 20px;
+
+    background: #f7f7f7;
+
+    border-radius: 10px;
+
+    text-align: left;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 14px 0;
+
+    border-bottom: 1px solid #e5e5e5;
+
+    font-size: 15px;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-row span {
+    color: #666;
+}
+
+.detail-row strong {
+    color: #222;
+}
+
+.detail-row .status {
+    color: #e67e22;
+}
+
+.confirmation-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+
+    margin-top: 30px;
+}
+
+.continue-btn,
+.orders-btn {
+    display: inline-block;
+
+    padding: 12px 22px;
+
+    border-radius: 7px;
+
+    text-decoration: none;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    transition: 0.2s;
+}
+
+.continue-btn {
+    background: #ff6b00;
+    color: white;
+}
+
+.continue-btn:hover {
+    background: #e85d00;
+}
+
+.orders-btn {
+    background: #ffffff;
+    color: #333;
+
+    border: 1px solid #ddd;
+}
+
+.orders-btn:hover {
+    background: #f2f2f2;
+}
+
+
+/* Responsive */
+
+@media (max-width: 600px) {
+
+    .confirmation-page {
+        padding: 40px 15px;
+    }
+
+    .confirmation-card {
+        padding: 30px 20px;
+    }
+
+    .confirmation-card h1 {
+        font-size: 24px;
+    }
+
+    .confirmation-actions {
+        flex-direction: column;
+    }
+
+    .continue-btn,
+    .orders-btn {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+}
