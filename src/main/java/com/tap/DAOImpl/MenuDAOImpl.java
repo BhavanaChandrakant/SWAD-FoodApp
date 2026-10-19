@@ -15,25 +15,25 @@ import com.tap.util.DBConnection;
 
 public class MenuDAOImpl implements MenuDAO {
 
-    private static final String insert_Query =
-            "INSERT INTO Menu(RestaurantID, ItemName, Description, Price, IsAvailable, Category, CreatedAt, UpdatedAt, DeletedAt, ImagePath) "
-            + "VALUES(?,?,?,?,?,?,?,?,?,?)";
+	private static final String insert_Query =
+	        "INSERT INTO menu(RestaurantID, ItemName, Description, Price, IsAvailable, Category, CreatedAt, UpdatedAt, DeletedAt, ImagePath) "
+	        + "VALUES(?,?,?,?,?,?,?,?,?,?)";
 
-    private static final String update_Query =
-            "UPDATE Menu SET RestaurantID=?, ItemName=?, Description=?, Price=?, IsAvailable=?, Category=?, ImagePath=? "
-            + "WHERE MenuID=?";
+	private static final String update_Query =
+	        "UPDATE menu SET RestaurantID=?, ItemName=?, Description=?, Price=?, IsAvailable=?, Category=?, ImagePath=? "
+	        + "WHERE MenuID=?";
 
-    private static final String select_Query =
-            "SELECT * FROM Menu WHERE MenuID=?";
+	private static final String select_Query =
+	        "SELECT * FROM menu WHERE MenuID=?";
 
-    private static final String delete_Query =
-            "DELETE FROM Menu WHERE MenuID=?";
+	private static final String delete_Query =
+	        "DELETE FROM menu WHERE MenuID=?";
 
-    private static final String select_All_Query =
-            "SELECT * FROM Menu";
+	private static final String select_All_Query =
+	        "SELECT * FROM menu";
 
-    private static final String select_All_By_Restaurant_Query =
-            "SELECT * FROM Menu WHERE RestaurantID=?";
+	private static final String select_All_By_Restaurant_Query =
+	        "SELECT * FROM menu WHERE RestaurantID=?";
 
 
     @Override
