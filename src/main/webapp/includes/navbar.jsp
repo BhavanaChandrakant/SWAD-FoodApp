@@ -1,4 +1,3 @@
-
 <%@ page import="com.tap.model.User"%>
 <%@ page import="com.tap.model.Cart"%>
 
@@ -42,16 +41,24 @@ if (loggedInUser != null && loggedInUser.getName() != null) {
 
                 </svg>
 		</span> <span class="swad-navbar-logo-text">SWAD</span>
-
 		</a>
 	</div>
 
+	<!-- MOBILE / TABLET HAMBURGER TOGGLE -->
+	<input type="checkbox" id="swad-menu-toggle" class="swad-menu-toggle"
+		aria-label="Toggle navigation menu" aria-controls="swad-navbar-links" />
+
+	<label for="swad-menu-toggle" class="swad-navbar-toggle"
+		aria-hidden="true"> <span></span> <span></span> <span></span>
+
+	</label>
 
 	<!-- NAVIGATION LINKS -->
-	<div class="swad-navbar-links">
+	<div class="swad-navbar-links" id="swad-navbar-links">
 
-		<a  class="swad-navbar-link"
-		     href="${pageContext.request.contextPath}/index.jsp"> Home </a>
+		<!-- HOME -->
+		<a class="swad-navbar-link"
+			href="${pageContext.request.contextPath}/index.jsp"> Home </a>
 
 		<!-- RESTAURANTS -->
 		<a class="swad-navbar-link"
@@ -59,27 +66,39 @@ if (loggedInUser != null && loggedInUser.getName() != null) {
 		</a>
 
 
-		<!-- CART WITH ITEM COUNT -->
+		<!-- SHOPPING TROLLEY ICON WITH ITEM COUNT -->
 		<div class="swad-navbar-cart">
 
 			<a class="swad-navbar-link swad-navbar-cart-link"
 				href="${pageContext.request.contextPath}/cart"
-				aria-label="Shopping cart, <%= navbarCartCount %> items"> Cart </a>
+				aria-label="Shopping cart, <%= navbarCartCount %> items"> <svg
+					xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="27"
+					height="27" fill="none" stroke="currentColor" stroke-width="1.8"
+					stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 
-			<%
-			if (navbarCartCount > 0) {
-			%>
+            <!-- Trolley handle -->
+            <path
+						d="M2 3h2l2.2 11.2a2 2 0 0 0 2 1.6h9.5a2 2 0 0 0 1.9-1.5L22 7H5"></path>
 
-			<span class="swad-navbar-cart-count"> <%=navbarCartCount > 99 ? "99+" : navbarCartCount%>
-			</span>
+            <!-- Basket lines -->
+            <path d="M9 7l1 7"></path>
+            <path d="M15 7l-1 7"></path>
 
-			<%
-			}
-			%>
+            <!-- Wheels -->
+            <circle cx="10" cy="20" r="1"></circle>
+            <circle cx="18" cy="20" r="1"></circle>
+
+        </svg> <%
+ if (navbarCartCount > 0) {
+ %> <span
+				class="swad-navbar-cart-count"> <%=navbarCartCount > 99 ? "99+" : navbarCartCount%>
+			</span> <%
+ }
+ %>
+
+			</a>
 
 		</div>
-
-
 		<!-- LOGIN OR PROFILE -->
 		<%
 		if (loggedInUser == null) {
@@ -101,7 +120,6 @@ if (loggedInUser != null && loggedInUser.getName() != null) {
 				<%=navbarUserName.isEmpty() ? "U" : navbarUserName.substring(0, 1).toUpperCase()%>
 
 			</button>
-
 
 			<!-- PROFILE DROPDOWN -->
 			<div class="swad-navbar-dropdown">

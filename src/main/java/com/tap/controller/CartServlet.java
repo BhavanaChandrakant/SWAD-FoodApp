@@ -1,3 +1,4 @@
+
 package com.tap.controller;
 
 import java.io.IOException;
@@ -33,7 +34,6 @@ public class CartServlet extends HttpServlet {
         }
 
         req.setAttribute("cart", cart);
-
         req.getRequestDispatcher("Cart.jsp").forward(req, resp);
     }
 
@@ -42,7 +42,15 @@ public class CartServlet extends HttpServlet {
                           HttpServletResponse resp)
             throws ServletException, IOException {
 
+        req.setCharacterEncoding("UTF-8");
+
         String action = req.getParameter("action");
+
+        if (action == null || action.trim().isEmpty()) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                    "Missing cart action parameter.");
+            return;
+        }
 
         HttpSession session = req.getSession();
 
@@ -53,212 +61,239 @@ public class CartServlet extends HttpServlet {
             session.setAttribute("cart", cart);
         }
 
-        // =========================================
-        // ADD ITEM
-        // =========================================
-        if ("add".equals(action)) {
+        try {
 
-            int menuId = Integer.parseInt(req.getParameter("menuId"));
-            int restaurantId = Integer.parseInt(req.getParameter("restaurantId"));
+            // ADD ITEM
+            if ("add".equals(action)) {
 
-            String itemName = req.getParameter("itemName");
-            float price = Float.parseFloat(req.getParameter("price"));
-            String imagePath = req.getParameter("imagePath");
+                int menuId = getRequiredInt(req, "menuId");
+                int restaurantId = getRequiredInt(req, "restaurantId");
 
-            CartItem cartItem = new CartItem(
-                    menuId,
-                    restaurantId,
-                    itemName,
-                    price,
-                    1,
-                    imagePath
-            );
+                String itemName = getRequiredString(req, "itemName");
+                float price = getRequiredFloat(req, "price");
+                String imagePath = req.getParameter("imagePath");
 
-            boolean added = cart.addItem(cartItem);
-
-            if (added) {
-
-                resp.sendRedirect(
-                        req.getContextPath()
-                        + "/menu?restaurantId="
-                        + restaurantId
+                CartItem cartItem = new CartItem(
+                        menuId,
+                        restaurantId,
+                        itemName,
+                        price,
+                        1,
+                        imagePath
                 );
 
-            } else {
+                boolean added = cart.addItem(cartItem);
 
-                req.setAttribute("differentRestaurant", true);
-                req.setAttribute("menuId", menuId);
-                req.setAttribute("restaurantId", restaurantId);
-                req.setAttribute("itemName", itemName);
-                req.setAttribute("price", price);
-                req.setAttribute("imagePath", imagePath);
-
-                MenuDAOImpl menuDao = new MenuDAOImpl();
-
-                List<Menu> menuList =
-                        menuDao.getAllMenuItemsByRestaurantId(restaurantId);
-
-                req.setAttribute("menuList", menuList);
-
-                req.getRequestDispatcher("Menu.jsp").forward(req, resp);
-            }
-        }
-
-        // =========================================
-        // CLEAR CART AND ADD NEW ITEM
-        // =========================================
-        else if ("clearAndAdd".equals(action)) {
-
-            int menuId = Integer.parseInt(req.getParameter("menuId"));
-            int restaurantId = Integer.parseInt(req.getParameter("restaurantId"));
-
-            String itemName = req.getParameter("itemName");
-            float price = Float.parseFloat(req.getParameter("price"));
-            String imagePath = req.getParameter("imagePath");
-
-            // Clear the previous restaurant's items.
-            cart.clearCart();
-
-            CartItem cartItem = new CartItem(
-                    menuId,
-                    restaurantId,
-                    itemName,
-                    price,
-                    1,
-                    imagePath
-            );
-
-            cart.addItem(cartItem);
-
-            session.setAttribute("cart", cart);
-
-            resp.sendRedirect(
-                    req.getContextPath()
-                    + "/menu?restaurantId="
-                    + restaurantId
-            );
-        }
-
-        // =========================================
-        // UPDATE QUANTITY
-        // =========================================
-        else if ("update".equals(action)) {
-
-            int menuId = Integer.parseInt(req.getParameter("menuId"));
-            int quantity = Integer.parseInt(req.getParameter("quantity"));
-
-            if (quantity > 0) {
-                cart.updateItem(menuId, quantity);
-            } else {
-                cart.removeItem(menuId);
-            }
-
-            session.setAttribute("cart", cart);
-
-            resp.sendRedirect(req.getContextPath() + "/cart");
-        }
-
-        // =========================================
-        // REMOVE ITEM
-        // =========================================
-        else if ("remove".equals(action)) {
-
-            int menuId = Integer.parseInt(req.getParameter("menuId"));
-
-            cart.removeItem(menuId);
-
-            session.setAttribute("cart", cart);
-
-            resp.sendRedirect(req.getContextPath() + "/cart");
-        }
-
-        // =========================================
-        // INCREASE QUANTITY
-        // =========================================
-        else if ("increase".equals(action)) {
-
-            int menuId = Integer.parseInt(req.getParameter("menuId"));
-
-            CartItem item = cart.getItems().get(menuId);
-
-            if (item != null) {
-                item.setQuantity(item.getQuantity() + 1);
-            }
-
-            session.setAttribute("cart", cart);
-
-            String source = req.getParameter("source");
-
-            if ("cart".equals(source)) {
-
-                resp.sendRedirect(req.getContextPath() + "/cart");
-
-            } else {
-
-                int restaurantId =
-                        Integer.parseInt(req.getParameter("restaurantId"));
-
-                resp.sendRedirect(
-                        req.getContextPath()
-                        + "/menu?restaurantId="
-                        + restaurantId
-                );
-            }
-        }
-
-        // =========================================
-        // DECREASE QUANTITY
-        // =========================================
-        else if ("decrease".equals(action)) {
-
-            int menuId = Integer.parseInt(req.getParameter("menuId"));
-
-            CartItem item = cart.getItems().get(menuId);
-
-            if (item != null) {
-
-                if (item.getQuantity() > 1) {
-                    item.setQuantity(item.getQuantity() - 1);
+                if (added) {
+                    resp.sendRedirect(
+                            req.getContextPath()
+                            + "/menu?restaurantId=" + restaurantId
+                    );
                 } else {
-                    cart.removeItem(menuId);
+                    req.setAttribute("differentRestaurant", true);
+                    req.setAttribute("menuId", menuId);
+                    req.setAttribute("restaurantId", restaurantId);
+                    req.setAttribute("itemName", itemName);
+                    req.setAttribute("price", price);
+                    req.setAttribute("imagePath", imagePath);
+
+                    MenuDAOImpl menuDao = new MenuDAOImpl();
+
+                    List<Menu> menuList =
+                            menuDao.getAllMenuItemsByRestaurantId(restaurantId);
+
+                    req.setAttribute("menuList", menuList);
+                    req.getRequestDispatcher("Menu.jsp").forward(req, resp);
                 }
             }
 
-            session.setAttribute("cart", cart);
+            // CLEAR CART AND ADD NEW ITEM
+            else if ("clearAndAdd".equals(action)) {
 
-            String source = req.getParameter("source");
+                int menuId = getRequiredInt(req, "menuId");
+                int restaurantId = getRequiredInt(req, "restaurantId");
 
-            if ("cart".equals(source)) {
+                String itemName = getRequiredString(req, "itemName");
+                float price = getRequiredFloat(req, "price");
+                String imagePath = req.getParameter("imagePath");
 
-                resp.sendRedirect(req.getContextPath() + "/cart");
+                cart.clearCart();
 
-            } else {
+                CartItem cartItem = new CartItem(
+                        menuId,
+                        restaurantId,
+                        itemName,
+                        price,
+                        1,
+                        imagePath
+                );
 
-                int restaurantId =
-                        Integer.parseInt(req.getParameter("restaurantId"));
+                cart.addItem(cartItem);
+                session.setAttribute("cart", cart);
 
                 resp.sendRedirect(
                         req.getContextPath()
-                        + "/menu?restaurantId="
-                        + restaurantId
+                        + "/menu?restaurantId=" + restaurantId
                 );
             }
+
+            // UPDATE QUANTITY
+            else if ("update".equals(action)) {
+
+                int menuId = getRequiredInt(req, "menuId");
+                int quantity = getRequiredInt(req, "quantity");
+
+                if (quantity > 0) {
+                    cart.updateItem(menuId, quantity);
+                } else {
+                    cart.removeItem(menuId);
+                }
+
+                session.setAttribute("cart", cart);
+                resp.sendRedirect(req.getContextPath() + "/cart");
+            }
+
+            // REMOVE ITEM
+            else if ("remove".equals(action)) {
+
+                int menuId = getRequiredInt(req, "menuId");
+
+                cart.removeItem(menuId);
+                session.setAttribute("cart", cart);
+
+                resp.sendRedirect(req.getContextPath() + "/cart");
+            }
+
+            // INCREASE QUANTITY
+            else if ("increase".equals(action)) {
+
+                int menuId = getRequiredInt(req, "menuId");
+
+                CartItem item = cart.getItems().get(menuId);
+
+                if (item != null) {
+                    item.setQuantity(item.getQuantity() + 1);
+                }
+
+                session.setAttribute("cart", cart);
+
+                redirectAfterQuantityChange(req, resp);
+            }
+
+            // DECREASE QUANTITY
+            else if ("decrease".equals(action)) {
+
+                int menuId = getRequiredInt(req, "menuId");
+
+                CartItem item = cart.getItems().get(menuId);
+
+                if (item != null) {
+                    if (item.getQuantity() > 1) {
+                        item.setQuantity(item.getQuantity() - 1);
+                    } else {
+                        cart.removeItem(menuId);
+                    }
+                }
+
+                session.setAttribute("cart", cart);
+
+                redirectAfterQuantityChange(req, resp);
+            }
+
+            // CLEAR CART
+            else if ("clear".equals(action)) {
+
+                cart.clearCart();
+                session.setAttribute("cart", cart);
+
+                resp.sendRedirect(req.getContextPath() + "/cart");
+            }
+
+            // UNKNOWN ACTION
+            else {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                        "Unknown cart action: " + action);
+            }
+
+        } catch (IllegalArgumentException e) {
+
+            getServletContext().log("CartServlet request error", e);
+
+            resp.sendError(
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    e.getMessage()
+            );
         }
+    }
 
-        // =========================================
-        // CLEAR CART — STAY ON CART PAGE
-        // =========================================
-        else if ("clear".equals(action)) {
+    private void redirectAfterQuantityChange(
+            HttpServletRequest req,
+            HttpServletResponse resp) throws IOException {
 
-            cart.clearCart();
+        String source = req.getParameter("source");
 
-            // Keep the cleared cart in the session.
-            session.setAttribute("cart", cart);
-
-            // Redirect to the cart page, NOT the restaurant page.
+        if ("cart".equals(source)) {
             resp.sendRedirect(req.getContextPath() + "/cart");
+        } else {
+            int restaurantId = getRequiredInt(req, "restaurantId");
 
-            return;
+            resp.sendRedirect(
+                    req.getContextPath()
+                    + "/menu?restaurantId=" + restaurantId
+            );
         }
+    }
+
+    private int getRequiredInt(HttpServletRequest req, String name) {
+
+        String value = req.getParameter(name);
+
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Missing required request parameter: " + name
+            );
+        }
+
+        try {
+            return Integer.parseInt(value.trim());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(
+                    "Invalid integer value for parameter: " + name
+            );
+        }
+    }
+
+    private float getRequiredFloat(HttpServletRequest req, String name) {
+
+        String value = getRequiredString(req, name);
+
+        try {
+            float number = Float.parseFloat(value);
+
+            if (!Float.isFinite(number) || number < 0) {
+                throw new IllegalArgumentException(
+                        "Invalid price value."
+                );
+            }
+
+            return number;
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(
+                    "Invalid decimal value for parameter: " + name
+            );
+        }
+    }
+
+    private String getRequiredString(HttpServletRequest req, String name) {
+
+        String value = req.getParameter(name);
+
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Missing required request parameter: " + name
+            );
+        }
+
+        return value.trim();
     }
 }

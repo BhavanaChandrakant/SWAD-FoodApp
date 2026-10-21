@@ -10,13 +10,13 @@
 <title>Create Account | SWAD</title>
 
 <link rel="stylesheet"
-      href="${pageContext.request.contextPath}/css/common.css?v=1">
+          href="${pageContext.request.contextPath}/css/common.css?v=1">
 
-<link rel="stylesheet"
-      href="${pageContext.request.contextPath}/css/Signup.css">
+    <link rel="stylesheet"
+          href="${pageContext.request.contextPath}/css/Signup.css">
 
-<link rel="stylesheet"
-      href="${pageContext.request.contextPath}/css/navbar.css?v=25">
+    <link rel="stylesheet"
+          href="${pageContext.request.contextPath}/css/navbar.css?v=25">
 
 </head>
 
@@ -24,30 +24,8 @@
 
 	<%@ include file="includes/navbar.jsp"%>
 
-	<!-- HEADER -->
-	<header class="header">
-
-		<a href="<%=request.getContextPath()%>/restaurant" class="brand"
-			aria-label="SWAD home"> <span class="brand-icon"
-			aria-hidden="true"> <svg viewBox="0 0 24 24" fill="none"
-					stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
-					stroke-linejoin="round">
-                    <path d="M3 2v7a4 4 0 0 0 8 0V2" />
-                    <path d="M7 2v20" />
-                    <path d="M21 15V2" />
-                    <path d="M18 15h3" />
-                    <path d="M21 15v7" />
-                </svg>
-		</span> <span class="brand-name">SWAD</span>
-		</a>
-
-		<nav class="header-links" aria-label="Main navigation">
-			<a href="<%=request.getContextPath()%>/restaurant">Restaurants</a>
-			<a href="<%=request.getContextPath()%>/cart">Cart</a> <a
-				href="<%=request.getContextPath()%>/login">Login</a>
-		</nav>
-
-	</header>
+	
+	
 
 
 	<!-- MAIN CONTENT -->

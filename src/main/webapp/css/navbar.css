@@ -1,69 +1,284 @@
-/* ==========================================
-   SWAD - SHARED NAVBAR
-   Dedicated stylesheet for every JSP page
-========================================== */
 
-/* Main navbar */
-.swad-navbar {
-    position: relative;
-    z-index: 1000;
+/* =====================================================
+   SWAD NAVBAR — CLEAN ROUNDED BUTTON DESIGN
+   Preserves existing typography and text colors.
+   Matches the supplied navbar.jsp.
+   ===================================================== */
 
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    width: 100%;
-    min-height: 70px;
-    margin: 0;
-    padding: 0 4.7%;
-
-    background-color: #ffffff;
-    border-bottom: 1px solid #f0e5df;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.025);
-
-    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+.swad-navbar,
+.swad-navbar * {
     box-sizing: border-box;
 }
 
-/* ==========================================
-   SWAD LOGO
-========================================== */
+.swad-navbar {
+    position: relative;
+    z-index: 1000;
+    width: 100%;
+    min-height: 76px;
+    padding: 12px 5%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    background: #ffffff;
+    border-bottom: 1px solid #e7ece8;
+    box-shadow: 0 2px 12px rgba(25, 55, 35, 0.045);
+}
 
-.swad-navbar .swad-navbar-brand {
+/* Logo */
+
+.swad-navbar-brand {
     display: flex;
     align-items: center;
     flex-shrink: 0;
-    margin: 0;
-    padding: 0;
 }
 
-.swad-navbar .swad-navbar-brand > a {
+.swad-navbar-brand > a {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-
-    margin: 0;
-    padding: 0;
-
-    color: #e23744;
-    text-decoration: none;
-    line-height: 1;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 999px;
+    transition: background-color 0.2s ease;
 }
 
-.swad-navbar .swad-navbar-logo-icon {
-    display: flex;
+.swad-navbar-brand > a:hover {
+    background-color: #f3f7f3;
+}
+
+.swad-navbar-logo-icon {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-
-    width: 38px;
-    height: 38px;
-    flex: 0 0 38px;
-
-    color: #ffffff;
-    background-color: #e23744;
-    border-radius: 9px;
+    flex-shrink: 0;
 }
 
+.swad-navbar-logo-icon svg {
+    display: block;
+    width: 32px;
+    height: 32px;
+}
+
+/* Navigation links */
+
+.swad-navbar-links {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+
+.swad-navbar-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 10px 18px;
+    border: 1px solid #e1e9e2;
+    border-radius: 999px;
+    background: #ffffff;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.swad-navbar-link:hover {
+    background-color: #edf6ef;
+    border-color: #b8d6bf;
+    box-shadow: 0 4px 10px rgba(30, 80, 40, 0.08);
+    transform: translateY(-1px);
+}
+
+.swad-navbar-link:active {
+    transform: translateY(0);
+}
+
+.swad-navbar-link:focus-visible,
+.swad-navbar-profile-button:focus-visible,
+.swad-navbar-dropdown a:focus-visible {
+    outline: 2px solid #27824a;
+    outline-offset: 3px;
+}
+
+/* Cart and item count */
+
+.swad-navbar-cart {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.swad-navbar-cart-link {
+    padding-right: 18px;
+}
+
+.swad-navbar-cart-count {
+    position: absolute;
+    top: -5px;
+    right: -3px;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    min-height: 20px;
+    padding: 2px 5px;
+    border: 1px solid #ffffff;
+    border-radius: 999px;
+    background: #eaf4ec;
+    pointer-events: none;
+}
+
+/* Profile button */
+
+.swad-navbar-profile {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.swad-navbar-profile-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: 1px solid #dce7de;
+    border-radius: 50%;
+    background: #f0f6f1;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.swad-navbar-profile-button:hover {
+    background: #e3f0e6;
+    border-color: #bcd7c2;
+    box-shadow: 0 3px 10px rgba(25, 75, 40, 0.08);
+    transform: translateY(-1px);
+}
+
+/* Profile dropdown */
+
+.swad-navbar-dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    z-index: 1100;
+    display: none;
+    min-width: 190px;
+    padding: 8px;
+    border: 1px solid #e2e9e3;
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: 0 10px 30px rgba(25, 45, 30, 0.12);
+}
+
+.swad-navbar-profile:hover .swad-navbar-dropdown,
+.swad-navbar-profile:focus-within .swad-navbar-dropdown {
+    display: block;
+}
+
+.swad-navbar-user-name {
+    padding: 10px 12px;
+}
+
+.swad-navbar-divider {
+    height: 1px;
+    margin: 5px 4px;
+    background: #e8eee9;
+}
+
+.swad-navbar-dropdown a {
+    display: block;
+    padding: 10px 12px;
+    border-radius: 9px;
+    transition: background-color 0.2s ease;
+}
+
+.swad-navbar-dropdown a:hover {
+    background: #f0f6f1;
+}
+
+.swad-navbar-dropdown .swad-navbar-logout:hover {
+    background: #fff1f0;
+}
+
+/* Responsive layout */
+
+@media (max-width: 760px) {
+    .swad-navbar {
+        min-height: 66px;
+        padding: 10px 16px;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .swad-navbar-links {
+        width: 100%;
+        flex: 0 0 100%;
+        justify-content: flex-start;
+        gap: 6px;
+    }
+
+    .swad-navbar-link {
+        min-height: 40px;
+        padding: 9px 13px;
+    }
+
+    .swad-navbar-dropdown {
+        right: 0;
+    }
+}
+
+@media (max-width: 420px) {
+    .swad-navbar {
+        padding: 8px 10px;
+        gap: 8px;
+    }
+
+    .swad-navbar-links {
+        gap: 3px;
+    }
+
+    .swad-navbar-link {
+        padding: 9px 10px;
+    }
+
+    .swad-navbar-logo-icon svg {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+/* Respect reduced-motion preferences */
+
+@media (prefers-reduced-motion: reduce) {
+    .swad-navbar *,
+    .swad-navbar *::before,
+    .swad-navbar *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+/* Preserve existing typography and remove unwanted underlines */
+.swad-navbar a,
+.swad-navbar a:hover,
+.swad-navbar a:focus,
+.swad-navbar a:active {
+    text-decoration: none;
+}
+
+/* SWAD logo styling */
 .swad-navbar .swad-navbar-logo-icon svg {
     display: block;
     width: 26px;
@@ -73,7 +288,6 @@
 
 .swad-navbar .swad-navbar-logo-text {
     display: inline-block;
-
     color: #e23744;
     font-family: "Segoe UI", Arial, Helvetica, sans-serif;
     font-size: 38px;
@@ -82,280 +296,318 @@
     line-height: 1;
 }
 
-/* ==========================================
-   NAVIGATION LINKS
-========================================== */
-
-.swad-navbar .swad-navbar-links {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 32px;
-
-    min-width: 0;
-    margin: 0 0 0 auto;
-    padding: 0;
-}
-
+/* Navbar links — slightly bigger, red and bold */
 .swad-navbar .swad-navbar-link {
-    position: relative;
-
-    display: inline-flex;
-    align-items: center;
-    flex-shrink: 0;
-
-    margin: 0;
-    padding: 0;
-
-    color: #292522;
-    background: transparent;
-    border: none;
-
-    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
-    font-size: 20px;
+    color: #e23744;
+    font-size: 18px;
     font-weight: 700;
-    line-height: 1.5;
-
-    text-decoration: none;
-    white-space: nowrap;
-    cursor: pointer;
-
-    transition: color 0.2s ease;
 }
 
 .swad-navbar .swad-navbar-link:hover {
     color: #e23744;
 }
 
-/* No underline animation */
-.swad-navbar .swad-navbar-link::after {
-    content: none;
-    display: none;
-}
-
-/* ==========================================
-   CART LINK AND ITEM COUNT
-========================================== */
-
-.swad-navbar .swad-navbar-cart {
-    position: relative;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    min-height: 32px;
-    margin: 0;
-    padding: 0;
-
-    overflow: visible;
-}
-
-.swad-navbar .swad-navbar-cart-link {
-    color: #292522;
-}
-
-.swad-navbar .swad-navbar-cart-link:hover {
+/* SWAD fork-and-spoon icon */
+.swad-navbar .swad-navbar-logo-icon svg {
+    width: 32px;
+    height: 32px;
     color: #e23744;
-}
-
-/* Red circular count badge */
-.swad-navbar .swad-navbar-cart-count {
-    position: absolute;
-    top: -8px;
-    right: -13px;
-    z-index: 1001;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    min-width: 20px;
-    height: 20px;
-    padding: 0 4px;
-
-    color: #ffffff;
-    background-color: #e31837;
-
-    border: 2px solid #ffffff;
-    border-radius: 50%;
-    box-sizing: border-box;
-
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 10px;
-    font-weight: 800;
-    line-height: 1;
-
-    white-space: nowrap;
-    pointer-events: none;
-}
-
-/* ==========================================
-   LOGIN / PROFILE
-========================================== */
-
-.swad-navbar .swad-navbar-profile {
-    position: relative;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    flex-shrink: 0;
-}
-
-.swad-navbar .swad-navbar-profile-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 38px;
-    height: 38px;
-    margin: 0;
-    padding: 0;
-
-    color: #ffffff;
-    background-color: #e23744;
-    border: none;
-    border-radius: 50%;
-
-    font-family: inherit;
-    font-size: 15px;
-    font-weight: 700;
-
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.swad-navbar .swad-navbar-profile-button:hover {
-    background-color: #c92d39;
-}
-
-/* Profile dropdown */
-.swad-navbar .swad-navbar-dropdown {
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
-    z-index: 1100;
-
-    display: none;
-    min-width: 190px;
-    padding: 12px;
-
-    background-color: #ffffff;
-    border: 1px solid #eeeeee;
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-}
-
-/* Show dropdown on hover and keyboard focus */
-.swad-navbar .swad-navbar-profile:hover .swad-navbar-dropdown,
-.swad-navbar .swad-navbar-profile:focus-within .swad-navbar-dropdown {
+    fill: #e23744;
     display: block;
 }
 
-.swad-navbar .swad-navbar-user-name {
-    padding: 8px 10px;
+/* =========================================
+   SWAD RESPONSIVE HAMBURGER MENU
+========================================= */
 
-    color: #292522;
-    font-size: 14px;
-    font-weight: 700;
-
-    overflow-wrap: anywhere;
+/* Hide hamburger controls on desktop */
+.swad-navbar .swad-menu-toggle {
+    display: none;
 }
 
-.swad-navbar .swad-navbar-dropdown a {
-    display: block;
-    padding: 10px;
-
-    color: #444444;
-    background-color: transparent;
-    border-radius: 6px;
-
-    font-family: inherit;
-    font-size: 14px;
-    text-decoration: none;
-
-    transition:
-        color 0.2s ease,
-        background-color 0.2s ease;
+.swad-navbar .swad-navbar-toggle {
+    display: none;
 }
 
-.swad-navbar .swad-navbar-dropdown a:hover {
-    color: #e23744;
-    background-color: #fff0ed;
-}
+/* Tablet and mobile */
+@media screen and (max-width: 768px) {
 
-.swad-navbar .swad-navbar-divider {
-    height: 1px;
-    margin: 6px 0;
-    background-color: #eeeeee;
-}
-
-.swad-navbar .swad-navbar-dropdown .swad-navbar-logout {
-    color: #e23744;
-}
-
-/* ==========================================
-   ACCESSIBILITY
-========================================== */
-
-.swad-navbar a:focus-visible,
-.swad-navbar button:focus-visible {
-    outline: 2px solid #e23744;
-    outline-offset: 4px;
-}
-
-/* ==========================================
-   RESPONSIVE NAVBAR
-========================================== */
-
-@media (max-width: 600px) {
     .swad-navbar {
-        min-height: 64px;
-        padding: 0 16px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 16px;
     }
 
-    .swad-navbar .swad-navbar-brand > a {
+    /* Keep logo on the left */
+    .swad-navbar .swad-navbar-brand {
+        margin-right: auto;
+    }
+
+    /* Show hamburger button */
+    .swad-navbar .swad-navbar-toggle {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        width: 44px;
+        height: 44px;
+        padding: 9px;
+        border: 1px solid #e23744;
+        border-radius: 10px;
+        background: #ffffff;
+        cursor: pointer;
+        transition: background-color 0.2s ease,
+                    transform 0.2s ease;
+    }
+
+    .swad-navbar .swad-navbar-toggle span {
+        display: block;
+        width: 23px;
+        height: 2.5px;
+        background-color: #e23744;
+        border-radius: 3px;
+        transition: transform 0.25s ease,
+                    opacity 0.2s ease;
+    }
+
+    .swad-navbar .swad-navbar-toggle:hover {
+        background-color: #fff1f2;
+    }
+
+    .swad-navbar .swad-navbar-toggle:focus-visible {
+        outline: 3px solid rgba(226, 55, 68, 0.3);
+        outline-offset: 3px;
+    }
+
+    /* Hide navigation until hamburger is selected */
+    .swad-navbar .swad-navbar-links {
+        display: none;
+        flex: 0 0 100%;
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
         gap: 8px;
+        padding-top: 12px;
+        border-top: 1px solid #f1d5d7;
     }
 
-    .swad-navbar .swad-navbar-logo-icon {
-        width: 33px;
-        height: 33px;
-        flex-basis: 33px;
+    /* Open menu when checkbox is checked */
+    .swad-navbar .swad-menu-toggle:checked
+        ~ .swad-navbar-links {
+        display: flex;
+    }
+
+    /* Full-width navigation links on small screens */
+    .swad-navbar .swad-navbar-links .swad-navbar-link {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        min-height: 42px;
+        padding: 10px 14px;
+        box-sizing: border-box;
+        color: #e23744;
+        font-size: 17px;
+        font-weight: 600;
+        text-decoration: none;
         border-radius: 8px;
     }
 
-    .swad-navbar .swad-navbar-logo-icon svg {
-        width: 23px;
-        height: 23px;
+    .swad-navbar .swad-navbar-links .swad-navbar-link:hover {
+        background-color: #fff1f2;
+        color: #e23744;
     }
 
-    .swad-navbar .swad-navbar-logo-text {
-        font-size: 25px;
+    /* Keep cart count positioned correctly */
+    .swad-navbar .swad-navbar-cart {
+        width: 100%;
     }
 
-    .swad-navbar .swad-navbar-links {
-        gap: 18px;
+    /* Keep profile dropdown within the mobile layout */
+    .swad-navbar .swad-navbar-profile {
+        align-self: flex-start;
     }
 
-    .swad-navbar .swad-navbar-link {
-        font-size: 14px;
+    /* Animate hamburger into an X */
+    .swad-navbar .swad-menu-toggle:checked
+        + .swad-navbar-toggle span:nth-child(1) {
+        transform: translateY(7.5px) rotate(45deg);
     }
 
-    .swad-navbar .swad-navbar-cart-count {
-        top: -7px;
-        right: -10px;
-
-        min-width: 18px;
-        height: 18px;
-        font-size: 9px;
+    .swad-navbar .swad-menu-toggle:checked
+        + .swad-navbar-toggle span:nth-child(2) {
+        opacity: 0;
     }
 
-    .swad-navbar .swad-navbar-profile-button {
-        width: 32px;
-        height: 32px;
-        font-size: 13px;
+    .swad-navbar .swad-menu-toggle:checked
+        + .swad-navbar-toggle span:nth-child(3) {
+        transform: translateY(-7.5px) rotate(-45deg);
     }
+}
+
+
+
+/* Basket item-count badge */
+.swad-navbar .swad-navbar-cart-link .swad-navbar-cart-count {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: 50px;
+    background: #e23744;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    box-sizing: border-box;
+}
+
+/* Mobile and tablet basket alignment */
+@media screen and (max-width: 768px) {
+    .swad-navbar .swad-navbar-cart {
+        width: 100%;
+    }
+
+    .swad-navbar .swad-navbar-cart-link {
+        justify-content: flex-start;
+        width: fit-content;
+        min-height: 42px;
+    }
+}
+/* =========================================
+   SWAD SHOPPING TROLLEY ICON
+========================================= */
+
+.swad-navbar .swad-navbar-cart {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.swad-navbar .swad-navbar-cart-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    color: #e23744;
+    text-decoration: none;
+    border-radius: 10px;
+}
+
+.swad-navbar .swad-navbar-cart-link svg {
+    display: block;
+    width: 27px;
+    height: 27px;
+    color: #e23744;
+    stroke: currentColor;
+    transition: transform 0.2s ease;
+}
+
+.swad-navbar .swad-navbar-cart-link:hover svg {
+    transform: translateY(-2px);
+}
+
+/* Item-count badge */
+.swad-navbar .swad-navbar-cart-link .swad-navbar-cart-count {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: 50px;
+    background-color: #e23744;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    box-sizing: border-box;
+}
+
+/* Mobile and tablet */
+@media screen and (max-width: 768px) {
+    .swad-navbar .swad-navbar-cart {
+        width: 100%;
+    }
+
+    .swad-navbar .swad-navbar-cart-link {
+        justify-content: flex-start;
+        width: fit-content;
+        min-height: 42px;
+    }
+}
+
+
+/* =========================================
+   SWAD NAVBAR — RED TEXT AND PROFILE ICON
+========================================= */
+
+/* All navbar text and links */
+.swad-navbar,
+.swad-navbar a,
+.swad-navbar .swad-navbar-link {
+    color: #e23744;
+}
+
+/* Profile icon / user initial */
+.swad-navbar .swad-navbar-profile,
+.swad-navbar .swad-navbar-profile-icon,
+.swad-navbar .swad-navbar-user-icon,
+.swad-navbar .swad-navbar-avatar {
+    color: #e23744 !important;
+}
+
+/* Profile initial alphabet */
+.swad-navbar .swad-navbar-profile span,
+.swad-navbar .swad-navbar-profile-icon span,
+.swad-navbar .swad-navbar-user-icon span,
+.swad-navbar .swad-navbar-avatar span {
+    color: #e23744 !important;
+}
+
+/* Profile dropdown text */
+.swad-navbar .swad-navbar-dropdown,
+.swad-navbar .swad-navbar-dropdown a,
+.swad-navbar .swad-navbar-dropdown span {
+    color: #e23744 !important;
+}
+
+/* Navbar hover state */
+.swad-navbar a:hover {
+    color: #c62836;
+}
+
+/* Profile icon SVG, if present */
+.swad-navbar .swad-navbar-profile svg,
+.swad-navbar .swad-navbar-profile-icon svg {
+    color: #e23744;
+    stroke: currentColor;
+    fill: none;
+}
+
+/* Make the profile initial */
+.swad-navbar .swad-navbar-profile,
+.swad-navbar .swad-navbar-profile *,
+.swad-navbar .swad-navbar-user,
+.swad-navbar .swad-navbar-user *,
+.swad-navbar .swad-navbar-avatar,
+.swad-navbar .swad-navbar-avatar *,
+.swad-navbar .swad-navbar-profile-icon,
+.swad-navbar .swad-navbar-profile-icon * {
+    color: #e23744 !important;
+    -webkit-text-fill-color: #e23744 !important;
+    font-size: 17px !important;
+    font-weight: 600 !important;
 }
