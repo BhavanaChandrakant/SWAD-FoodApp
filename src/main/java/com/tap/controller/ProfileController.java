@@ -1,3 +1,4 @@
+
 package com.tap.controller;
 
 import java.io.IOException;
@@ -17,480 +18,229 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet("/profile")
 public class ProfileController extends HttpServlet {
 
-    // =====================================================
-    // GET
-    // =====================================================
+    private static final long serialVersionUID = 1L;
 
+    private UserDAOImpl userDAO;
+
+    @Override
+    public void init() {
+        userDAO = new UserDAOImpl();
+    }
+
+    // ==========================================
+    // GET: VIEW PROFILE / EDIT / CHANGE PASSWORD
+    // ==========================================
     @Override
     protected void doGet(HttpServletRequest req,
                          HttpServletResponse resp)
-                         throws ServletException, IOException {
+            throws ServletException, IOException {
 
-        HttpSession session = req.getSession();
+        HttpSession session = req.getSession(false);
 
-        User loggedInUser =
-                (User) session.getAttribute("user");
-
-
-        // User is not logged in
-
-        if (loggedInUser == null) {
-
-            resp.sendRedirect(
-                    req.getContextPath() + "/login"
-            );
-
+        if (session == null) {
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
+        String userEmail =
+                (String) session.getAttribute("userEmail");
 
-        UserDAOImpl userDAO =
-                new UserDAOImpl();
-
-
-        // Get latest user details from database
-
-        User user =
-                userDAO.getUser(
-                        loggedInUser.getId()
-                );
-
-
-        if (user == null) {
-
-            resp.sendRedirect(
-                    req.getContextPath() + "/login"
-            );
-
+        if (userEmail == null || userEmail.trim().isEmpty()) {
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
+        try {
+            User user = userDAO.getUserByEmail(userEmail.trim());
 
-        String action =
-                req.getParameter("action");
+            if (user == null) {
+                session.removeAttribute("userEmail");
+                resp.sendRedirect(req.getContextPath() + "/login");
+                return;
+            }
 
+            String action = req.getParameter("action");
 
-        // =================================================
-        // EDIT PROFILE
-        // =================================================
+            req.setAttribute("user", user);
 
-        if ("edit".equals(action)) {
+            if ("edit".equals(action)) {
+                req.getRequestDispatcher("/EditProfile.jsp")
+                   .forward(req, resp);
+                return;
+            }
 
-            req.setAttribute(
-                    "user",
-                    user
+            if ("password".equals(action)) {
+                req.getRequestDispatcher("/ChangePassword.jsp")
+                   .forward(req, resp);
+                return;
+            }
+
+            req.getRequestDispatcher("/Profile.jsp")
+               .forward(req, resp);
+
+        } catch (Exception e) {
+            getServletContext().log("Unable to load profile.", e);
+            resp.sendError(
+                HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                "Unable to load your profile."
             );
-
-            req.getRequestDispatcher(
-                    "EditProfile.jsp"
-            ).forward(req, resp);
-
-            return;
         }
-
-
-        // =================================================
-        // CHANGE PASSWORD
-        // =================================================
-
-        if ("password".equals(action)) {
-
-            req.setAttribute(
-                    "user",
-                    user
-            );
-
-            req.getRequestDispatcher(
-                    "ChangePassword.jsp"
-            ).forward(req, resp);
-
-            return;
-        }
-
-
-        // =================================================
-        // PROFILE PAGE
-        // =================================================
-
-        req.setAttribute(
-                "user",
-                user
-        );
-
-        req.getRequestDispatcher(
-                "Profile.jsp"
-        ).forward(req, resp);
     }
 
-
-    // =====================================================
-    // POST
-    // =====================================================
-
+    // ==========================================
+    // POST: UPDATE PROFILE / CHANGE PASSWORD
+    // ==========================================
     @Override
     protected void doPost(HttpServletRequest req,
                           HttpServletResponse resp)
-                          throws ServletException, IOException {
+            throws ServletException, IOException {
 
-        HttpSession session =
-                req.getSession();
+        req.setCharacterEncoding("UTF-8");
 
-        User loggedInUser =
-                (User) session.getAttribute("user");
+        HttpSession session = req.getSession(false);
 
-
-        // User is not logged in
-
-        if (loggedInUser == null) {
-
-            resp.sendRedirect(
-                    req.getContextPath() + "/login"
-            );
-
+        if (session == null) {
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
+        String userEmail =
+                (String) session.getAttribute("userEmail");
 
-        String action =
-                req.getParameter("action");
+        if (userEmail == null || userEmail.trim().isEmpty()) {
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
 
-
-        // =================================================
-        // CHANGE PASSWORD
-        // =================================================
-
-        if ("changePassword".equals(action)) {
-
-            String currentPassword =
-                    req.getParameter(
-                            "currentPassword"
-                    );
-
-            String newPassword =
-                    req.getParameter(
-                            "newPassword"
-                    );
-
-            String confirmPassword =
-                    req.getParameter(
-                            "confirmPassword"
-                    );
-
-
-            UserDAOImpl userDAO =
-                    new UserDAOImpl();
-
-
-            User user =
-                    userDAO.getUser(
-                            loggedInUser.getId()
-                    );
-
+        try {
+            User user = userDAO.getUserByEmail(userEmail.trim());
 
             if (user == null) {
-
-                resp.sendRedirect(
-                        req.getContextPath() + "/login"
-                );
-
+                session.removeAttribute("userEmail");
+                resp.sendRedirect(req.getContextPath() + "/login");
                 return;
             }
 
+            String action = req.getParameter("action");
 
-            // =============================================
-            // CHECK CURRENT PASSWORD
-            // =============================================
+            // ======================================
+            // CHANGE PASSWORD
+            // ======================================
+            if ("changePassword".equals(action)) {
 
-            if (currentPassword == null ||
-                currentPassword.trim().isEmpty()) {
+                String currentPassword =
+                        req.getParameter("currentPassword");
 
-                req.setAttribute(
-                        "error",
-                        "Please enter your current password."
-                );
+                String newPassword =
+                        req.getParameter("newPassword");
 
-                req.setAttribute(
-                        "user",
-                        user
-                );
+                String confirmPassword =
+                        req.getParameter("confirmPassword");
 
-                req.getRequestDispatcher(
-                        "ChangePassword.jsp"
-                ).forward(req, resp);
+                if (currentPassword == null
+                        || currentPassword.isEmpty()
+                        || user.getPassward() == null
+                        || !BCrypt.checkpw(
+                                currentPassword,
+                                user.getPassward())) {
 
-                return;
-            }
-
-
-            // =============================================
-            // VERIFY CURRENT PASSWORD USING BCrypt
-            // =============================================
-
-            if (!BCrypt.checkpw(
-                    currentPassword,
-                    user.getPassward())) {
-
-                req.setAttribute(
+                    req.setAttribute(
                         "error",
                         "Current password is incorrect."
-                );
+                    );
+                    req.setAttribute("user", user);
+                    req.getRequestDispatcher("/ChangePassword.jsp")
+                       .forward(req, resp);
+                    return;
+                }
 
-                req.setAttribute(
-                        "user",
-                        user
-                );
+                if (newPassword == null
+                        || newPassword.trim().isEmpty()) {
 
-                req.getRequestDispatcher(
-                        "ChangePassword.jsp"
-                ).forward(req, resp);
-
-                return;
-            }
-
-
-            // =============================================
-            // CHECK NEW PASSWORD
-            // =============================================
-
-            if (newPassword == null ||
-                newPassword.trim().isEmpty()) {
-
-                req.setAttribute(
+                    req.setAttribute(
                         "error",
                         "New password cannot be empty."
-                );
+                    );
+                    req.setAttribute("user", user);
+                    req.getRequestDispatcher("/ChangePassword.jsp")
+                       .forward(req, resp);
+                    return;
+                }
 
-                req.setAttribute(
-                        "user",
-                        user
-                );
+                if (confirmPassword == null
+                        || !newPassword.equals(confirmPassword)) {
 
-                req.getRequestDispatcher(
-                        "ChangePassword.jsp"
-                ).forward(req, resp);
-
-                return;
-            }
-
-
-            // =============================================
-            // CHECK CONFIRM PASSWORD
-            // =============================================
-
-            if (confirmPassword == null ||
-                !newPassword.equals(confirmPassword)) {
-
-                req.setAttribute(
+                    req.setAttribute(
                         "error",
                         "New password and confirm password do not match."
-                );
+                    );
+                    req.setAttribute("user", user);
+                    req.getRequestDispatcher("/ChangePassword.jsp")
+                       .forward(req, resp);
+                    return;
+                }
 
-                req.setAttribute(
-                        "user",
-                        user
-                );
-
-                req.getRequestDispatcher(
-                        "ChangePassword.jsp"
-                ).forward(req, resp);
-
-                return;
-            }
-
-
-            // =============================================
-            // NEW PASSWORD MUST BE DIFFERENT
-            // =============================================
-
-            if (newPassword.equals(currentPassword)) {
-
-                req.setAttribute(
+                if (newPassword.equals(currentPassword)) {
+                    req.setAttribute(
                         "error",
-                        "New password must be different from current password."
+                        "New password must differ from the current password."
+                    );
+                    req.setAttribute("user", user);
+                    req.getRequestDispatcher("/ChangePassword.jsp")
+                       .forward(req, resp);
+                    return;
+                }
+
+                user.setPassward(
+                    BCrypt.hashpw(newPassword, BCrypt.gensalt())
                 );
 
-                req.setAttribute(
-                        "user",
-                        user
-                );
+                userDAO.updateUser(user);
 
-                req.getRequestDispatcher(
-                        "ChangePassword.jsp"
-                ).forward(req, resp);
-
+                // No User object is stored in the session.
+                resp.sendRedirect(req.getContextPath() + "/profile");
                 return;
             }
 
+            // ======================================
+            // UPDATE PROFILE
+            // ======================================
+            String name = req.getParameter("name");
+            String email = req.getParameter("email");
+            String phone = req.getParameter("phone");
+            String address = req.getParameter("address");
 
-            // =============================================
-            // HASH NEW PASSWORD USING BCrypt
-            // =============================================
+            if (name == null || name.trim().isEmpty()
+                    || email == null || email.trim().isEmpty()) {
 
-            String hashedPassword =
-                    BCrypt.hashpw(
-                            newPassword,
-                            BCrypt.gensalt()
-                    );
-
-
-            // Set hashed password
-
-            user.setPassward(
-                    hashedPassword
-            );
-
-
-            // Update database
-
-            userDAO.updateUser(
-                    user
-            );
-
-
-            // Update session user
-
-            session.setAttribute(
-                    "user",
-                    user
-            );
-
-
-            // Go back to profile
-
-            resp.sendRedirect(
-                    req.getContextPath() + "/profile"
-            );
-
-            return;
-        }
-
-
-        // =================================================
-        // EDIT PROFILE
-        // =================================================
-
-        String name =
-                req.getParameter("name");
-
-        String email =
-                req.getParameter("email");
-
-        String phone =
-                req.getParameter("phone");
-
-        String address =
-                req.getParameter("address");
-
-
-        // =============================================
-        // VALIDATE NAME AND EMAIL
-        // =============================================
-
-        if (name == null ||
-            name.trim().isEmpty() ||
-
-            email == null ||
-            email.trim().isEmpty()) {
-
-
-            UserDAOImpl userDAO =
-                    new UserDAOImpl();
-
-
-            User user =
-                    userDAO.getUser(
-                            loggedInUser.getId()
-                    );
-
-
-            req.setAttribute(
-                    "user",
-                    user
-            );
-
-
-            req.setAttribute(
+                req.setAttribute(
                     "error",
                     "Name and Email are required."
-            );
-
-
-            req.getRequestDispatcher(
-                    "EditProfile.jsp"
-            ).forward(req, resp);
-
-            return;
-        }
-
-
-        // =============================================
-        // GET CURRENT USER
-        // =============================================
-
-        UserDAOImpl userDAO =
-                new UserDAOImpl();
-
-
-        User user =
-                userDAO.getUser(
-                        loggedInUser.getId()
                 );
+                req.setAttribute("user", user);
+                req.getRequestDispatcher("/EditProfile.jsp")
+                   .forward(req, resp);
+                return;
+            }
 
+            user.setName(name.trim());
+            user.setEmail(email.trim());
+            user.setPhone(phone == null ? "" : phone.trim());
+            user.setAddress(address == null ? "" : address.trim());
 
-        if (user == null) {
+            userDAO.updateUser(user);
 
-            resp.sendRedirect(
-                    req.getContextPath() + "/login"
+            // Keep the session email in sync if the email changed.
+            session.setAttribute("userEmail", user.getEmail());
+
+            resp.sendRedirect(req.getContextPath() + "/profile");
+
+        } catch (Exception e) {
+            getServletContext().log("Unable to update profile.", e);
+            resp.sendError(
+                HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                "Unable to update your profile. Please try again."
             );
-
-            return;
         }
-
-
-        // =============================================
-        // UPDATE PROFILE INFORMATION
-        // =============================================
-
-        user.setName(
-                name.trim()
-        );
-
-        user.setEmail(
-                email.trim()
-        );
-
-        user.setPhone(
-                phone == null
-                        ? ""
-                        : phone.trim()
-        );
-
-        user.setAddress(
-                address == null
-                        ? ""
-                        : address.trim()
-        );
-
-
-        // Update database
-
-        userDAO.updateUser(
-                user
-        );
-
-
-        // Update session
-
-        session.setAttribute(
-                "user",
-                user
-        );
-
-
-        // Return to profile
-
-        resp.sendRedirect(
-                req.getContextPath() + "/profile"
-        );
     }
 }

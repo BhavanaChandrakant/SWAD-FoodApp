@@ -1,3 +1,4 @@
+
 package com.tap.controller;
 
 import java.io.IOException;
@@ -9,6 +10,7 @@ import com.tap.DAOImpl.MenuDAOImpl;
 import com.tap.DAOImpl.OderitemDAOImpl;
 import com.tap.DAOImpl.OrderTableDAOImpl;
 import com.tap.DAOImpl.RestaurantDAOImpl;
+import com.tap.DAOImpl.UserDAOImpl;
 
 import com.tap.model.Menu;
 import com.tap.model.Oderitem;
@@ -26,140 +28,131 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet("/orders")
 public class MyOrdersController extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
+
     @Override
     protected void doGet(HttpServletRequest req,
                          HttpServletResponse resp)
-                         throws ServletException, IOException {
+            throws ServletException, IOException {
 
-        HttpSession session = req.getSession();
+        // 1. Get the existing session.
+        HttpSession session = req.getSession(false);
 
-        User user = (User) session.getAttribute("user");
-
-        if (user == null) {
+        if (session == null) {
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
-        // -----------------------------------
-        // 1. Get user's orders
-        // -----------------------------------
+        // 2. Read the logged-in user's email.
+        String userEmail = (String) session.getAttribute("userEmail");
 
-        OrderTableDAOImpl orderDAO =
-                new OrderTableDAOImpl();
-
-        List<Ordertable> orders =
-                orderDAO.getOrdersByUserId(user.getId());
-
-
-        // -----------------------------------
-        // 2. Restaurant names/details
-        // -----------------------------------
-
-        RestaurantDAOImpl restaurantDAO =
-                new RestaurantDAOImpl();
-
-        Map<Integer, Restaurant> restaurants =
-                new HashMap<>();
-
-
-        // -----------------------------------
-        // 3. Order items
-        // -----------------------------------
-
-        OderitemDAOImpl orderItemDAO =
-                new OderitemDAOImpl();
-
-        Map<Integer, List<Oderitem>> orderItems =
-                new HashMap<>();
-
-
-        // -----------------------------------
-        // 4. Menu details
-        // -----------------------------------
-
-        MenuDAOImpl menuDAO =
-                new MenuDAOImpl();
-
-        Map<Integer, Menu> menuDetails =
-                new HashMap<>();
-
-
-        // -----------------------------------
-        // Process every order
-        // -----------------------------------
-
-        for (Ordertable order : orders) {
-
-            // Get restaurant
-            Restaurant restaurant =
-                    restaurantDAO.getRestaurant(
-                            order.getRestaurantId()
-                    );
-
-            if (restaurant != null) {
-
-                restaurants.put(
-                        order.getRestaurantId(),
-                        restaurant
-                );
-            }
-
-
-            // Get items belonging to this order
-            List<Oderitem> items =
-                    orderItemDAO.getOderitemsByOrderId(
-                            order.getOrderId()
-                    );
-
-            orderItems.put(
-                    order.getOrderId(),
-                    items
-            );
-
-
-            // Get menu information for every item
-            for (Oderitem item : items) {
-
-                Menu menu =
-                        menuDAO.getMenu(
-                                item.getMenuId()
-                        );
-
-                if (menu != null) {
-
-                    menuDetails.put(
-                            item.getMenuId(),
-                            menu
-                    );
-                }
-            }
+        if (userEmail == null || userEmail.trim().isEmpty()) {
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
         }
 
+        try {
+            // 3. Retrieve the user from the database.
+            UserDAOImpl userDAO = new UserDAOImpl();
 
-        // -----------------------------------
-        // Send data to JSP
-        // -----------------------------------
+            User user = userDAO.getUserByEmail(userEmail.trim());
 
-        req.setAttribute("orders", orders);
+            if (user == null) {
+                session.removeAttribute("userEmail");
+                resp.sendRedirect(req.getContextPath() + "/login");
+                return;
+            }
 
-        req.setAttribute(
-                "restaurants",
-                restaurants
-        );
+            // 4. Get this user's orders.
+            OrderTableDAOImpl orderDAO = new OrderTableDAOImpl();
 
-        req.setAttribute(
-                "orderItems",
-                orderItems
-        );
+            List<Ordertable> orders =
+                    orderDAO.getOrdersByUserId(user.getId());
 
-        req.setAttribute(
-                "menuDetails",
-                menuDetails
-        );
+            // 5. Prepare restaurant details.
+            RestaurantDAOImpl restaurantDAO =
+                    new RestaurantDAOImpl();
 
+            Map<Integer, Restaurant> restaurants =
+                    new HashMap<>();
 
-        req.getRequestDispatcher(
-                "MyOrders.jsp"
-        ).forward(req, resp);
+            // 6. Prepare order-item details.
+            OderitemDAOImpl orderItemDAO =
+                    new OderitemDAOImpl();
+
+            Map<Integer, List<Oderitem>> orderItems =
+                    new HashMap<>();
+
+            // 7. Prepare menu details.
+            MenuDAOImpl menuDAO = new MenuDAOImpl();
+
+            Map<Integer, Menu> menuDetails =
+                    new HashMap<>();
+
+            // 8. Process every order.
+            if (orders != null) {
+                for (Ordertable order : orders) {
+
+                    Restaurant restaurant =
+                            restaurantDAO.getRestaurant(
+                                    order.getRestaurantId()
+                            );
+
+                    if (restaurant != null) {
+                        restaurants.put(
+                                order.getRestaurantId(),
+                                restaurant
+                        );
+                    }
+
+                    List<Oderitem> items =
+                            orderItemDAO.getOderitemsByOrderId(
+                                    order.getOrderId()
+                            );
+
+                    orderItems.put(
+                            order.getOrderId(),
+                            items
+                    );
+
+                    if (items != null) {
+                        for (Oderitem item : items) {
+
+                            Menu menu =
+                                    menuDAO.getMenu(
+                                            item.getMenuId()
+                                    );
+
+                            if (menu != null) {
+                                menuDetails.put(
+                                        item.getMenuId(),
+                                        menu
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 9. Send the data to MyOrders.jsp.
+            req.setAttribute("orders", orders);
+            req.setAttribute("restaurants", restaurants);
+            req.setAttribute("orderItems", orderItems);
+            req.setAttribute("menuDetails", menuDetails);
+
+            req.getRequestDispatcher("/MyOrders.jsp")
+               .forward(req, resp);
+
+        } catch (Exception e) {
+            getServletContext().log(
+                    "Unable to load the user's orders.",
+                    e
+            );
+
+            resp.sendError(
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Unable to load your orders. Please try again."
+            );
+        }
     }
 }

@@ -1,3 +1,4 @@
+
 package com.tap.controller;
 
 import java.io.IOException;
@@ -20,143 +21,100 @@ public class SignupController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req,
                          HttpServletResponse resp)
-                         throws ServletException, IOException {
+            throws ServletException, IOException {
 
-        req.getRequestDispatcher("Signup.jsp")
+        req.getRequestDispatcher("/Signup.jsp")
            .forward(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req,
                           HttpServletResponse resp)
-                          throws ServletException, IOException {
+            throws ServletException, IOException {
 
-        String name =
-                req.getParameter("name");
+        req.setCharacterEncoding("UTF-8");
 
-        String email =
-                req.getParameter("email");
-
-        String password =
-                req.getParameter("password");
-
-        String phone =
-                req.getParameter("phone");
-
-        String address =
-                req.getParameter("address");
-
-        String role =
-                req.getParameter("role");
-
+        String name = req.getParameter("name");
+        String email = req.getParameter("email");
+        String password = req.getParameter("password");
+        String phone = req.getParameter("phone");
+        String address = req.getParameter("address");
+        String role = req.getParameter("role");
 
         // =============================================
         // VALIDATION
         // =============================================
 
-        if (name == null ||
-            name.trim().isEmpty() ||
-
-            email == null ||
-            email.trim().isEmpty() ||
-
-            password == null ||
-            password.trim().isEmpty()) {
+        if (name == null || name.trim().isEmpty()
+                || email == null || email.trim().isEmpty()
+                || password == null || password.isEmpty()) {
 
             req.setAttribute(
                     "error",
                     "Name, Email and Password are required."
             );
 
-            req.getRequestDispatcher(
-                    "Signup.jsp"
-            ).forward(req, resp);
-
+            req.getRequestDispatcher("/Signup.jsp")
+               .forward(req, resp);
             return;
         }
 
+        name = name.trim();
+        email = email.trim();
 
         // =============================================
         // USER DAO
         // =============================================
 
-        UserDAOImpl userDAO =
-                new UserDAOImpl();
-
+        UserDAOImpl userDAO = new UserDAOImpl();
 
         // =============================================
-        // CHECK EMAIL ALREADY EXISTS
+        // CHECK WHETHER EMAIL ALREADY EXISTS
         // =============================================
 
-        User existingUser =
-                userDAO.getUserByEmail(
-                        email.trim()
-                );
+        User existingUser = userDAO.getUserByEmail(email);
 
         if (existingUser != null) {
 
             req.setAttribute(
                     "error",
-                    "Email already registered."
+                    "Email already registered. Please log in."
             );
 
-            req.getRequestDispatcher(
-                    "Signup.jsp"
-            ).forward(req, resp);
-
+            req.getRequestDispatcher("/Signup.jsp")
+               .forward(req, resp);
             return;
         }
 
-
         // =============================================
-        // HASH PASSWORD USING BCrypt
+        // HASH PASSWORD
         // =============================================
 
-        String hashedPassword =
-                BCrypt.hashpw(
-                        password,
-                        BCrypt.gensalt()
-                );
-
+        String hashedPassword = BCrypt.hashpw(
+                password,
+                BCrypt.gensalt()
+        );
 
         // =============================================
         // SET DEFAULT ROLE
         // =============================================
 
-        if (role == null ||
-            role.trim().isEmpty()) {
-
-            role = "customer";
-        }
-
-
-        // Only customer or admin is allowed
-
-        if (!role.equals("customer") &&
-            !role.equals("admin")) {
-
-            role = "customer";
-        }
-
+        // Public signup must always create a customer.
+        // Do not allow a visitor to register as admin.
+        role = "customer";
 
         // =============================================
         // CREATE USER
         // =============================================
 
-        User user =
-                new User(
-                        name.trim(),
-                        email.trim(),
-                        hashedPassword,
-                        phone == null
-                                ? ""
-                                : phone.trim(),
-                        address == null
-                                ? ""
-                                : address.trim(),
-                        role
-                );
-
+        User user = new User(
+                name,
+                email,
+                hashedPassword,
+                phone == null ? "" : phone.trim(),
+                address == null ? "" : address.trim(),
+                role
+        );
 
         // =============================================
         // INSERT USER INTO DATABASE
@@ -164,52 +122,64 @@ public class SignupController extends HttpServlet {
 
         userDAO.addUser(user);
 
-
         // =============================================
-        // GET THE NEWLY CREATED USER
-        // =============================================
-
-        User createdUser =
-                userDAO.getUserByEmail(
-                        email.trim()
-                );
-
-
-        // =============================================
-        // CREATE LOGIN SESSION
+        // VERIFY THAT USER WAS CREATED
         // =============================================
 
-        if (createdUser != null) {
+        User createdUser = userDAO.getUserByEmail(email);
 
-            HttpSession session =
-                    req.getSession();
-
-            session.setAttribute(
-                    "user",
-                    createdUser
-            );
-
-
-            // =========================================
-            // GO TO RESTAURANTS PAGE
-            // =========================================
-
-            resp.sendRedirect(
-                    req.getContextPath() + "/restaurant"
-            );
-
-        } else {
-
-            // User was not found after signup
+        if (createdUser == null) {
 
             req.setAttribute(
                     "error",
-                    "Account created, but login could not be completed."
+                    "Registration could not be completed. Please try again."
             );
 
-            req.getRequestDispatcher(
-                    "Login.jsp"
-            ).forward(req, resp);
+            req.getRequestDispatcher("/Signup.jsp")
+               .forward(req, resp);
+            return;
         }
+
+        // =============================================
+        // AUTOMATIC LOGIN AFTER SIGNUP
+        // =============================================
+
+        HttpSession session = req.getSession(true);
+
+        // Remove previous user's cart if a different
+        // user was already logged in.
+        String previousEmail =
+                (String) session.getAttribute("userEmail");
+
+        if (previousEmail != null
+                && !previousEmail.equalsIgnoreCase(email)) {
+            session.removeAttribute("cart");
+        }
+
+        // Remove old session-based user details.
+        session.removeAttribute("user");
+        session.removeAttribute("checkoutUser");
+        session.removeAttribute("checkoutAddress");
+        session.removeAttribute("checkoutPhone");
+        session.removeAttribute("checkoutPincode");
+
+        // Change session ID after authentication.
+        req.changeSessionId();
+
+        // Store only the registered user's email.
+        session.setAttribute(
+                "userEmail",
+                createdUser.getEmail()
+        );
+
+        session.removeAttribute("afterLogin");
+
+        // =============================================
+        // REDIRECT TO RESTAURANTS
+        // =============================================
+
+        resp.sendRedirect(
+                req.getContextPath() + "/restaurant"
+        );
     }
 }

@@ -1,7 +1,9 @@
+
 package com.tap.controller;
 
 import java.io.IOException;
 
+import com.tap.DAOImpl.UserDAOImpl;
 import com.tap.model.Cart;
 import com.tap.model.User;
 
@@ -15,39 +17,68 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet("/checkout")
 public class CheckoutController extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
+
     @Override
-    protected void doGet(HttpServletRequest req,
-                         HttpServletResponse resp)
-                         throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request,
+                         HttpServletResponse response)
+            throws ServletException, IOException {
 
-        HttpSession session = req.getSession();
+        String contextPath = request.getContextPath();
 
-        // Get logged-in user
-        User user = (User) session.getAttribute("user");
+        // Do not create a new session just to check authentication.
+        HttpSession session = request.getSession(false);
 
-        if (user == null) {
-
-            // Remember that user should go to Cart after login
-            session.setAttribute("afterLogin", "cart");
-
-            resp.sendRedirect(req.getContextPath() + "/login");
-
+        if (session == null) {
+            response.sendRedirect(contextPath + "/login");
             return;
         }
 
-        // Get cart
-        Cart cart = (Cart) session.getAttribute("cart");
+        String email = (String) session.getAttribute("userEmail");
 
-        if (cart == null || cart.isEmpty()) {
-
-            resp.sendRedirect(req.getContextPath() + "/cart");
-
+        if (email == null || email.trim().isEmpty()) {
+            session.setAttribute("afterLogin", "checkout");
+            response.sendRedirect(contextPath + "/login");
             return;
         }
 
-        req.setAttribute("cart", cart);
+        try {
+            UserDAOImpl userDAO = new UserDAOImpl();
+            User user = userDAO.getUserByEmail(email.trim());
 
-        req.getRequestDispatcher("Checkout.jsp")
-           .forward(req, resp);
+            if (user == null) {
+                session.removeAttribute("userEmail");
+                session.setAttribute("afterLogin", "checkout");
+
+                response.sendRedirect(contextPath + "/login");
+                return;
+            }
+
+            Cart cart = (Cart) session.getAttribute("cart");
+
+            if (cart == null || cart.getTotalItems() <= 0) {
+                response.sendRedirect(contextPath + "/cart");
+                return;
+            }
+
+            // Request attributes are available to Checkout.jsp only.
+            // The User object is not stored in the session.
+            request.setAttribute("user", user);
+            request.setAttribute("cart", cart);
+
+            request.getRequestDispatcher("/Checkout.jsp")
+                   .forward(request, response);
+
+        } catch (Exception e) {
+
+            getServletContext().log(
+                "Unable to load checkout.", e
+            );
+
+            response.sendError(
+                HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                "Unable to load checkout. Please check the server console."
+            );
+        }
     }
 }

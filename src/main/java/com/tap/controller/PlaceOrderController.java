@@ -1,3 +1,4 @@
+
 package com.tap.controller;
 
 import java.io.IOException;
@@ -5,6 +6,7 @@ import java.sql.Timestamp;
 
 import com.tap.DAOImpl.OderitemDAOImpl;
 import com.tap.DAOImpl.OrderTableDAOImpl;
+import com.tap.DAOImpl.UserDAOImpl;
 import com.tap.model.Cart;
 import com.tap.model.CartItem;
 import com.tap.model.Oderitem;
@@ -21,23 +23,53 @@ import jakarta.servlet.http.HttpSession;
 @WebServlet("/placeOrder")
 public class PlaceOrderController extends HttpServlet {
 
+    private static final long serialVersionUID = 1L;
+
     @Override
     protected void doPost(HttpServletRequest req,
-                           HttpServletResponse resp)
-                           throws ServletException, IOException {
+                          HttpServletResponse resp)
+            throws ServletException, IOException {
 
-        // 1. Get session
-        HttpSession session = req.getSession();
+        req.setCharacterEncoding("UTF-8");
 
-        // 2. Get logged-in user
-        User user = (User) session.getAttribute("user");
+        // 1. Get the existing session without creating a new one.
+        HttpSession session = req.getSession(false);
 
-        if (user == null) {
+        if (session == null) {
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
-        // 3. Get cart
+        // 2. Get the logged-in user's email from the session.
+        String userEmail = (String) session.getAttribute("userEmail");
+
+        if (userEmail == null || userEmail.trim().isEmpty()) {
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
+
+        // 3. Retrieve the user from the database.
+        User user;
+
+        try {
+            UserDAOImpl userDAO = new UserDAOImpl();
+            user = userDAO.getUserByEmail(userEmail.trim());
+        } catch (Exception e) {
+            getServletContext().log("Error retrieving user for order.", e);
+            resp.sendError(
+                HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                "Unable to retrieve user details."
+            );
+            return;
+        }
+
+        if (user == null) {
+            session.removeAttribute("userEmail");
+            resp.sendRedirect(req.getContextPath() + "/login");
+            return;
+        }
+
+        // 4. Get the cart from the same session.
         Cart cart = (Cart) session.getAttribute("cart");
 
         if (cart == null || cart.isEmpty()) {
@@ -45,73 +77,88 @@ public class PlaceOrderController extends HttpServlet {
             return;
         }
 
-        // 4. Get payment method
+        // 5. Validate the payment method.
         String paymentMethod = req.getParameter("paymentMethod");
 
-        if (paymentMethod == null || paymentMethod.isEmpty()) {
+        if (paymentMethod == null || paymentMethod.trim().isEmpty()) {
             resp.sendRedirect(req.getContextPath() + "/checkout");
             return;
         }
 
-        // 5. Get restaurant ID from cart
-        CartItem firstItem = cart.getItems().values().iterator().next();
+        paymentMethod = paymentMethod.trim();
 
-        int restaurantId = firstItem.getRestaurantId();
+        if (!paymentMethod.equals("UPI")
+                && !paymentMethod.equals("Card")
+                && !paymentMethod.equals("Cash")) {
+            resp.sendRedirect(req.getContextPath() + "/checkout");
+            return;
+        }
 
-        // 6. Create Ordertable object
-        Ordertable order = new Ordertable(
+        try {
+            // 6. Get the restaurant ID from the first cart item.
+            CartItem firstItem = cart.getItems().values().iterator().next();
+            int restaurantId = firstItem.getRestaurantId();
+
+            // 7. Create the order.
+            Ordertable order = new Ordertable(
                 user.getId(),
                 restaurantId,
                 new Timestamp(System.currentTimeMillis()),
                 cart.getTotal(),
                 "Pending",
                 paymentMethod
-        );
+            );
 
-        // 7. Insert order into OrderTable
-        OrderTableDAOImpl orderDAO = new OrderTableDAOImpl();
+            // 8. Save the order.
+            OrderTableDAOImpl orderDAO = new OrderTableDAOImpl();
+            int orderId = orderDAO.addOrdertable(order);
 
-        int orderId = orderDAO.addOrdertable(order);
+            if (orderId <= 0) {
+                req.setAttribute(
+                    "error",
+                    "Unable to place order. Please try again."
+                );
+                req.setAttribute("cart", cart);
+                req.setAttribute("user", user);
 
-        // 8. Check whether order was inserted
-        if (orderId == 0) {
+                req.getRequestDispatcher("/Checkout.jsp")
+                   .forward(req, resp);
+                return;
+            }
 
-            req.setAttribute("error",
-                    "Unable to place order. Please try again.");
+            // 9. Save each order item.
+            OderitemDAOImpl orderItemDAO = new OderitemDAOImpl();
 
-            req.setAttribute("cart", cart);
-
-            req.getRequestDispatcher("Checkout.jsp")
-               .forward(req, resp);
-
-            return;
-        }
-
-        // 9. Insert every cart item into OrderItem
-        OderitemDAOImpl orderItemDAO = new OderitemDAOImpl();
-
-        for (CartItem item : cart.getItems().values()) {
-
-            Oderitem orderItem = new Oderitem(
+            for (CartItem item : cart.getItems().values()) {
+                Oderitem orderItem = new Oderitem(
                     orderId,
                     item.getMenuId(),
                     item.getQuantity(),
                     item.getItemTotal()
+                );
+
+                orderItemDAO.addOderitem(orderItem);
+            }
+
+            // 10. Clear the cart after placing the order.
+            cart.clearCart();
+            session.setAttribute("cart", cart);
+
+            // 11. Forward order details to the confirmation page.
+            req.setAttribute("orderId", orderId);
+            req.setAttribute("totalAmount", order.getTotalAmount());
+            req.setAttribute("paymentMethod", paymentMethod);
+
+            req.getRequestDispatcher("/OrderConfirmation.jsp")
+               .forward(req, resp);
+
+        } catch (Exception e) {
+            getServletContext().log("Error placing order.", e);
+
+            resp.sendError(
+                HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                "An error occurred while placing your order."
             );
-
-            orderItemDAO.addOderitem(orderItem);
         }
-
-        // 10. Clear cart after successful order
-        cart.clearCart();
-
-        // 11. Send details to confirmation page
-        req.setAttribute("orderId", orderId);
-        req.setAttribute("totalAmount", order.getTotalAmount());
-        req.setAttribute("paymentMethod", paymentMethod);
-
-        // 12. Forward to confirmation page
-        req.getRequestDispatcher("OrderConfirmation.jsp")
-           .forward(req, resp);
     }
 }
